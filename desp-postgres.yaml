@@ -1,0 +1,70 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+        - name: postgres-container
+          image: postgres:16.1
+          env:
+            - name: POSTGRES_DB
+              value: "tienda_system"
+            - name: POSTGRES_USER
+              value: "liz"
+            - name: POSTGRES_PASSWORD
+              value: "12345"
+          volumeMounts:
+            - name: init-sql-script
+              mountPath: /docker-entrypoint-initdb.d
+            - name: postgres-pvc
+              mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: init-sql-script
+          configMap:
+            name: init-sql-configmap
+        - name: postgres-pvc
+          persistentVolumeClaim:
+            claimName: postgres-pvc
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: init-sql-configmap
+data:
+  init.sql: |
+    create table Helados (
+      id bigint primary key generated always as identity,
+      sabor character varying(255) not null,
+      tvaso character varying(255) not null,
+      precio numeric(10, 2) not null,
+      disponibles integer not null,
+
+      CONSTRAINT helados_sabor_uniq UNIQUE (sabor)
+    );
+
+    insert into helados (sabor, tvaso, precio, disponibles) values
+      ('Pistache', 'Grande', 19.99, 20),
+      ('Chocolate', 'Mediano', 14.99, 50),
+      ('Fresa', 'Chico', 9.99, 55);

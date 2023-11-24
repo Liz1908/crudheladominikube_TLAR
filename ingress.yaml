@@ -1,0 +1,16 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: api-helados-ingress
+spec:
+  rules:
+  - host: api.tanguiano.com
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/helado"
+        backend:
+          service:
+            name: api-helados-service
+            port:
+              number: 80

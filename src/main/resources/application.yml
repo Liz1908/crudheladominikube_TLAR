@@ -1,0 +1,16 @@
+#configuracion para JDBC
+
+spring:
+  application:
+    name: crud-helado #nombre de nuestra aplicacion
+
+datasource:
+  my-connection: #jdbc:postgresql://localhost:5432/tienda_system sin contenedor para el contenedor: jdbc:postgresql://db:5432/tienda_system
+    jdbc-url: jdbc:postgresql://postgres-service:5432/tienda_system?sslmode=disable #con contenedor - para evr donde esta nuestra base de datos  -pool conexion que se encarga de ver las conexiones a nuestra base de datos
+    username: liz #user mio de la base datos
+    password: 12345 #pass mio de la base datos
+    maximum-pool-size: 10 #maximo de 10 simultaneas
+    pool-name: "crud-pool" #nombre de la conexion por si tenemos multiples conexiones
+    auto-commit: true #Para guardar los cambios                        - sin necesidad saber que hay auto commits
+
+#Por ejemplo, en un sistema de base de datos configurado para "auto-commit", si ejecutas una sentencia SQL para insertar un nuevo registro en una tabla, la base de datos guardará automáticamente ese registro después de ejecutar la sentencia. No es necesario ejecutar una sentencia de confirmación por separado para aplicar los cambios.

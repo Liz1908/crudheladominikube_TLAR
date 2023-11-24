@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: despliegue-apihelados-minikube
+  labels:
+    app: api-helados
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: api-helados
+  template:
+    metadata:
+      labels:
+        app: api-helados
+    spec: # Esta línea debe estar al mismo nivel de indentación que labels
+      containers:
+      - name: app-api-container
+        image: anguianotlar/crudheladominikubee:latest
+        ports:
+        - containerPort: 8080
+        env:
+        - name: DATABASE_URL
+          value: postgres://liz:12345@postgres-service:5432/tienda_system?sslmode=disable
+
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-helados-service
+  labels:
+    app: api-helados
+spec:
+  type: NodePort
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8080
+  selector:
+    app: api-helados
+
